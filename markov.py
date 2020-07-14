@@ -40,9 +40,17 @@ def make_chains(text_string):
         [None]
     """
 
+    words = text_string.split()
     chains = {}
 
-    # your code goes here
+    for index in range(len(words) - 2):
+        word_pair = (words[index], words[index + 1])
+        following_word = words[index + 2]
+        chains.setdefault(word_pair, []).append(following_word)
+        # if word_pair in chains:
+        #     chains[word_pair].append(following_word)
+        # else:
+        #     chains[word_pair] = [following_word]       
 
     return chains
 
@@ -51,6 +59,10 @@ def make_text(chains):
     """Return text from chains."""
 
     words = []
+
+    starting_pair = choice(chains.keys())
+
+    words.append(starting_pair)
 
     # your code goes here
 
