@@ -60,16 +60,19 @@ def make_text(chains):
 
     words = []
 
-    starting_pair = choice(chains.keys())
+    bigram = choice(list(chains.keys()))
 
-    words.append(starting_pair)
+    words.extend(bigram)
 
-    # your code goes here
+    while bigram in chains:
+        next_word = choice(chains[bigram])
+        words.append(next_word)
+        bigram = (bigram[1], next_word)
 
     return " ".join(words)
 
 
-input_path = "green-eggs.txt"
+input_path = "gettysburg.txt"
 
 # Open the file and turn it into one long string
 input_text = open_and_read_file(input_path)
