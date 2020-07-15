@@ -45,9 +45,16 @@ def make_chains(text_string, gram_num):
     chains = {}
 
     for index in range(len(words) - gram_num):
-        ngram = tuple(words[index:gram_num+index])
+        #to account for unknown number of words making up chain
+        #use list slicing to grab n number of words
+        #convert that list slice back into a tuple
+        ngram = tuple(words[index:gram_num + index])
+        #the next work after n words will be the index + n
         following_word = words[index + gram_num]
+        
+        #try to append, if key does not yet exist set an empty list first
         chains.setdefault(ngram, []).append(following_word)
+
         # if word_pair in chains:
         #     chains[word_pair].append(following_word)
         # else:
@@ -61,16 +68,38 @@ def make_text(chains):
 
     words = []
 
-    ngram = choice(list(chains.keys()))
+    #generating a list of valid starting tuples
+    #in this case, only tuples with capitalized first words
+    starting_tuples = [word_tup for word_tup in chains
+                        if word_tup[0][0].isupper()]
+
+    ngram = choice(starting_tuples)
 
     words.extend(ngram)
 
+    sentence_limit = 3
+    sentence_count = 0
+
     while ngram in chains:
+
         next_word = choice(chains[ngram])
         words.append(next_word)
+
+        #to build the next gram for an unknown length of chain
+        #use list slicing to cut out first word in tuple
         end_of_gram = list(ngram)[1:]
+
+        #add on my following word
         end_of_gram.append(next_word)
+
+        #convert that list back into a tuple to match keys in dictionary
         ngram = tuple(end_of_gram)
+
+        if next_word[-1] in [".","!","?"]:
+            sentence_count += 1
+
+        if sentence_count == sentence_limit:
+            break
 
     return " ".join(words)
 
@@ -81,7 +110,7 @@ input_path = sys.argv[1]
 input_text = open_and_read_file(input_path)
 
 # Get a Markov chain
-chains = make_chains(input_text, 3)
+chains = make_chains(input_text, 2)
 
 # Produce random text
 random_text = make_text(chains)
